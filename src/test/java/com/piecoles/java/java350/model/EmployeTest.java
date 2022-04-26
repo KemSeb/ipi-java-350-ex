@@ -68,7 +68,12 @@ public class EmployeTest {
     @CsvSource({
             "'T12345',0,2,1.0,2300.0",
             "'M123456',0,1,1.0,1700.0",
-            "'T123458',0,1,1.0,1000.0"
+            "'T123458',0,1,1.0,1000.0",
+            ",0,1,1.0,1000.0",
+            "'T123459',0,,1.0,1000.0",
+
+
+
 
     })
     public void testGetPrimeAnnuelleManagerPerformanceBasePleinTemps(
