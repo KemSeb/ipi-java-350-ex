@@ -48,6 +48,9 @@ public class Employe {
      * @return
      */
     public Integer getNombreAnneeAnciennete() {
+        if(dateEmbauche == null || dateEmbauche.isAfter(LocalDate.now())){
+            return 0;
+        }
         return LocalDate.now().getYear() - dateEmbauche.getYear();
     }
 
@@ -65,7 +68,7 @@ public class Employe {
         case THURSDAY: if(d.isLeapYear()) var =  var + 1; break;
         case FRIDAY:
         if(d.isLeapYear()) var =  var + 2;
-        else var =  var + 1;
+        else var =  var + 1; break;
 case SATURDAY:var = var + 1;
                     break;
         }
