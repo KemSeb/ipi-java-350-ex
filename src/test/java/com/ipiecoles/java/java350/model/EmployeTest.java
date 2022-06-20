@@ -1,4 +1,4 @@
-package com.piecoles.java.java350.model;
+package com.ipiecoles.java.java350.model;
 
 import com.ipiecoles.java.java350.model.Employe;
 import org.assertj.core.api.Assertions;
@@ -67,14 +67,13 @@ public class EmployeTest {
     @ParameterizedTest
     @CsvSource({
             "'T12345',0,2,1.0,2300.0",
+            "'M12345',0,1,0.5,850.0",
             "'M123456',0,1,1.0,1700.0",
             "'T123458',0,1,1.0,1000.0",
             ",0,1,1.0,1000.0",
-            "'T123459',0,,1.0,1000.0",
-
-
-
-
+            "'M12345',2,1,1.0,1900.0",
+            "'T12346',5,1,1.0,1500.0",
+            "'T123459',0,,1.0,1000.0"
     })
     public void testGetPrimeAnnuelleManagerPerformanceBasePleinTemps(
             String matricule,
