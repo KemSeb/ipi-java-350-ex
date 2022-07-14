@@ -7,62 +7,64 @@ import com.ipiecoles.java.java350.model.NiveauEtude;
 import com.ipiecoles.java.java350.model.Poste;
 import com.ipiecoles.java.java350.repository.EmployeRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 
 import java.time.LocalDate;
 
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class EmployeServiceTest {
-    @Autowired
+    @InjectMocks
     EmployeService employeService;
 
-    @Autowired
+    @Mock
     private EmployeRepository employeRepository;
-
-    @BeforeEach
-    @AfterEach
-    public void purge(){
-        employeRepository.deleteAll();
-    }
 
     @Test
     public void testEmbaucheEmploye() throws EmployeException {
-        //Given
+        //given
+        Mockito.when(employeRepository.findByMatricule("C00001")).thenReturn(null);
+        Mockito.when(employeRepository.save(Mockito.any(Employe.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
+        //when
+        employeService.embaucheEmploye("Taratata","Balou",Poste.COMMERCIAL,NiveauEtude.LICENCE,1.0);
+        //then
+        ArgumentCaptor<Employe> employeArgumentCaptor = ArgumentCaptor.forClass(Employe.class);
+        Mockito.verify(employeRepository).save(employeArgumentCaptor.capture());
 
 
-        //When
+        Assertions.assertThat(employeArgumentCaptor.getValue().getMatricule()).isEqualTo("C00001");
+        Assertions.assertThat(employeArgumentCaptor.getValue().getNom()).isEqualTo("Taratata");
+        Assertions.assertThat(employeArgumentCaptor.getValue().getPrenom()).isEqualTo("Balou");
+        Assertions.assertThat(employeArgumentCaptor.getValue().getSalaire()).isEqualTo(1825.46);
+        Assertions.assertThat(employeArgumentCaptor.getValue().getPerformance()).isEqualTo(Entreprise.PERFORMANCE_BASE);
+        Assertions.assertThat(employeArgumentCaptor.getValue().getDateEmbauche()).isEqualTo(LocalDate.now());
+        Assertions.assertThat(employeArgumentCaptor.getValue().getTempsPartiel()).isEqualTo(1.0);
 
-         employeService.embaucheEmploye("Doe", "John", Poste.COMMERCIAL, NiveauEtude.MASTER, 1.0);
-
-        //Then
-        Employe employe = employeRepository.findByMatricule("C00001");
-        Assertions.assertThat(employe.getNom()).isEqualTo("Doe");
-        Assertions.assertThat(employe.getPrenom()).isEqualTo("John");
-        Assertions.assertThat(employe.getDateEmbauche()).isEqualTo(LocalDate.now());
-        Assertions.assertThat(employe.getPerformance()).isEqualTo(Entreprise.PERFORMANCE_BASE);
-        Assertions.assertThat(employe.getSalaire()).isEqualTo(2129.71);
-        Assertions.assertThat(employe.getTempsPartiel()).isEqualTo(1);
 
     }
 
     @Test
-    public void testCalculPerformanceCommerciale() throws EmployeException {
-        //Given
-        //When
-        employeService.embaucheEmploye("Doe","John", Poste.COMMERCIAL, NiveauEtude.MASTER,1.0);
-        employeService.calculPerformanceCommercial("C00001",50000L,25000L);
-        //then
-        Employe employe = employeRepository.findByMatricule("C00001");
-        Assertions.assertThat(employe.getPerformance()).isEqualTo(6);
+    void testCalculPerformanceCommercial() throws EmployeException {
+        //given
+        Mockito.when(employeRepository.findByMatricule("C00001")).thenReturn(new Employe());
+        Mockito.when(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).thenReturn(1.5);
+        Mockito.when(employeRepository.save(Mockito.any(Employe.class))).thenAnswer(AdditionalAnswers.returnsFirstArg());
 
+        //when
+        employeService.calculPerformanceCommercial("C00001", 9876543210L, 9125482314L);
+
+        //then
+        ArgumentCaptor<Employe> employeCaptor = ArgumentCaptor.forClass(Employe.class);
+        Mockito.verify(employeRepository).save(employeCaptor.capture());
+
+        Assertions.assertThat(employeCaptor.getValue().getPerformance()).isEqualTo(3);
     }
 
     @Test
@@ -71,7 +73,7 @@ public class EmployeServiceTest {
         //When
         employeService.embaucheEmploye("Doe","jhon", Poste.COMMERCIAL, NiveauEtude.MASTER,1.0);
         //then
-        Assertions.assertThat(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).isEqualTo(1);
+        Assertions.assertThat(employeRepository.avgPerformanceWhereMatriculeStartsWith("C")).isEqualTo(0);
 
     }
     @Test
