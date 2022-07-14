@@ -137,12 +137,12 @@ public class EmployeTest {
 
     @ParameterizedTest
     @CsvSource({
-            "2020,9",
-            "2021,11",
-            "2022,11",
-            "2023,10",
-            "2024,8",
-            "2040,10"
+            "2020,10",
+            "2021,10",
+            "2022,10",
+            "2023,9",
+            "2024,9",
+            "2040,11"
     })
 
     public void testGetNbRtt(
